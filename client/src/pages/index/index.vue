@@ -14,9 +14,10 @@ export default {
       title: "Hello",
     };
   },
-  async onLoad() {
-    const socketTask = await uni.connectSocket({
-      url: "ws://localhost:3000"
+   onLoad() {
+    const socketTask =  uni.connectSocket({
+      url: "ws://localhost:3000/koa/ws?id=99999",
+	  complete: ()=> {}
     });
 
 		console.log('socketTask', socketTask)
