@@ -19,44 +19,44 @@
 export default {
   data() {
     return {
-      msg: "",
-      nickName: "",
+      msg: '',
+      nickName: '',
       chatMessages: [],
       socketOpen: false, // 连接状态
       socketMsgQueue: [], // 消息队列
-    };
+    }
   },
   onLoad() {
-    if (!uni.getStorageSync("nickNmae")) {
+    if (!uni.getStorageSync('nickNmae')) {
       uni.navigateTo({
-        url: "../login/index",
-      });
+        url: '../login/index',
+      })
     }
 
-    this.nickName = uni.getStorageSync("nickNmae");
+    this.nickName = uni.getStorageSync('nickNmae')
 
     // 连接websocket
     uni.connectSocket({
-      url: "ws://localhost:3000/koa/ws?id=99999",
+      url: 'ws://localhost:3000/koa/ws?id=99999',
       complete: () => {},
-    });
+    })
 
     // 连接websocket成功后执行
     uni.onSocketOpen((res) => {
-      this.socketOpen = true;
+      this.socketOpen = true
       for (var i = 0; i < this.socketMsgQueue.length; i++) {
-        this.sendSocketMessage(this.socketMsgQueue[i]);
+        this.sendSocketMessage(this.socketMsgQueue[i])
       }
-      this.socketMsgQueue = [];
-    });
+      this.socketMsgQueue = []
+    })
   },
   methods: {
     // 发送消息
     sendSocketMessage(msg) {
       if (this.socketOpen) {
-        uni.sendSocketMessage({ data: msg });
+        uni.sendSocketMessage({ data: msg })
       } else {
-        this.socketMsgQueue.push(msg);
+        this.socketMsgQueue.push(msg)
       }
     },
 
@@ -67,10 +67,10 @@ export default {
         time: Date.now(),
         name: this.nickName,
         msg: this.msg,
-      });
+      })
     },
   },
-};
+}
 </script>
 
 <style>

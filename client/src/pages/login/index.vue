@@ -9,26 +9,26 @@
 export default {
   data() {
     return {
-      nickName: "",
-    };
+      nickName: '',
+    }
   },
   onLoad() {
-    if (uni.getStorageSync("nickNmae")) {
+    if (uni.getStorageSync('nickNmae')) {
       uni.navigateTo({
-        url: "../index/index",
-      });
+        url: '../index/index',
+      })
     }
   },
   methods: {
     login() {
-      if (!this.nickName.trim()) return;
-      uni.setStorageSync("nickNmae", this.nickName);
+      if (!this.nickName.trim()) return
+      uni.setStorageSync('nickNmae', this.nickName)
       uni.navigateTo({
-        url: "../index/index",
-      });
+        url: '../index/index',
+      })
     },
   },
-};
+}
 </script>
 
 <style></style>
