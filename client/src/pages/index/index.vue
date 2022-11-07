@@ -1,8 +1,16 @@
 <template>
   <view class="content">
-    <image class="logo" src="/static/logo.png"></image>
-    <view>
-      <text class="title">{{ title }}</text>
+    <view class="cahtMessageList">
+      <view class="msg" v-for="item in chatMessages" id="item.id">
+        <text>{{ item.name }}</text>
+        <text>{{ new Date(item.time) }}</text>
+        <text>{{ item.msg }}</text>
+      </view>
+    </view>
+
+    <view class="sendBox">
+      <input type="text" placeholder="请输入消息" v-model="msg" />
+      <button @click="sendMsg">发送</button>
     </view>
   </view>
 </template>
@@ -11,18 +19,57 @@
 export default {
   data() {
     return {
-      title: "Hello",
+      msg: "",
+      nickName: "",
+      chatMessages: [],
+      socketOpen: false, // 连接状态
+      socketMsgQueue: [], // 消息队列
     };
   },
-   onLoad() {
-    const socketTask =  uni.connectSocket({
+  onLoad() {
+    if (!uni.getStorageSync("nickNmae")) {
+      uni.navigateTo({
+        url: "../login/index",
+      });
+    }
+
+    this.nickName = uni.getStorageSync("nickNmae");
+
+    // 连接websocket
+    uni.connectSocket({
       url: "ws://localhost:3000/koa/ws?id=99999",
-	  complete: ()=> {}
+      complete: () => {},
     });
 
-		console.log('socketTask', socketTask)
+    // 连接websocket成功后执行
+    uni.onSocketOpen((res) => {
+      this.socketOpen = true;
+      for (var i = 0; i < this.socketMsgQueue.length; i++) {
+        this.sendSocketMessage(this.socketMsgQueue[i]);
+      }
+      this.socketMsgQueue = [];
+    });
   },
-  methods: {},
+  methods: {
+    // 发送消息
+    sendSocketMessage(msg) {
+      if (this.socketOpen) {
+        uni.sendSocketMessage({ data: msg });
+      } else {
+        this.socketMsgQueue.push(msg);
+      }
+    },
+
+    // 点击发送按钮
+    sendMsg() {
+      this.sendSocketMessage({
+        id: Date.now(),
+        time: Date.now(),
+        name: this.nickName,
+        msg: this.msg,
+      });
+    },
+  },
 };
 </script>
 
@@ -34,19 +81,17 @@ export default {
   justify-content: center;
 }
 
-.logo {
-  height: 200rpx;
-  width: 200rpx;
-  margin: 200rpx auto 50rpx auto;
+.cahtMessageList {
+  width: 100vw;
 }
 
-.text-area {
+.sendBox {
   display: flex;
-  justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
+  justify-content: space-between;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  border-top: 1px solid #ccc;
 }
 </style>
