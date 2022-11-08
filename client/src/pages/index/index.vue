@@ -36,18 +36,22 @@ export default {
     this.nickName = uni.getStorageSync('nickNmae')
 
     // 连接websocket
-    uni.connectSocket({
-      url: 'ws://localhost:3000/koa/ws?id=99999',
+    let socketTask = uni.connectSocket({
+      url: 'ws://localhost:3000',
       complete: () => {},
     })
-
+    socketTask.onMessage((data) => {
+      console.log(data)
+    })
     // 连接websocket成功后执行
     uni.onSocketOpen((res) => {
-      this.socketOpen = true
-      for (var i = 0; i < this.socketMsgQueue.length; i++) {
-        this.sendSocketMessage(this.socketMsgQueue[i])
-      }
-      this.socketMsgQueue = []
+      console.log(res)
+      uni.sendSocketMessage({
+        data: '123123',
+      })
+    })
+    uni.onSocketError(function (res) {
+      console.log('WebSocket连接打开失败，请检查！', res)
     })
   },
   methods: {
