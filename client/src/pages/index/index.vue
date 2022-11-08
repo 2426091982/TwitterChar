@@ -10,7 +10,7 @@
 
     <view class="sendBox">
       <input type="text" placeholder="请输入消息" v-model="msg" />
-      <button @click="sendMsg">发送</button>
+      <button class="sendBtn" @click="sendMsg">发送</button>
     </view>
   </view>
 </template>
@@ -38,7 +38,7 @@ export default {
 
     // 连接websocket
     uni.connectSocket({
-      url: 'ws://localhost:3000/koa/ws?id=99999',
+      url: 'ws://localhost:3000',
       complete: () => {},
     })
 
@@ -52,9 +52,15 @@ export default {
       this.socketMsgQueue = []
     })
 
+    // 连接websocket失败后执行
+    uni.onSocketError(function (res) {
+      console.log('WebSocket连接打开失败，请检查！', res)
+    })
+
+    // 接受到消息后执行
     uni.onSocketMessage((res) => {
       console.log('收到服务器内容：' + res.data)
-      this.chatMessages.push(JSON.parse(res.data))
+      // this.chatMessages.push(JSON.parse(res.data))
     })
   },
   methods: {
@@ -104,5 +110,9 @@ export default {
   bottom: 0;
   width: 100vw;
   border-top: 1px solid #ccc;
+}
+
+.sendBtn {
+  
 }
 </style>
