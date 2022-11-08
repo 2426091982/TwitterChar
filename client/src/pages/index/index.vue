@@ -27,6 +27,7 @@ export default {
     }
   },
   onLoad() {
+    // 判断是否登录 如果没有登录跳转到login
     if (!uni.getStorageSync('nickNmae')) {
       uni.navigateTo({
         url: '../login/index',
@@ -42,32 +43,42 @@ export default {
     })
 
     // 连接websocket成功后执行
-    uni.onSocketOpen((res) => {
+    uni.onSocketOpen(() => {
       this.socketOpen = true
-      for (var i = 0; i < this.socketMsgQueue.length; i++) {
+      // 连接成功后 将消息队列中的消息发送给后端
+      for (let i = 0; i < this.socketMsgQueue.length; i++) {
         this.sendSocketMessage(this.socketMsgQueue[i])
       }
       this.socketMsgQueue = []
+    })
+
+    uni.onSocketMessage((res) => {
+      console.log('收到服务器内容：' + res.data)
+      this.chatMessages.push(JSON.parse(res.data))
     })
   },
   methods: {
     // 发送消息
     sendSocketMessage(msg) {
+      // 判断是否在线 在线则发送消息 否则将消息push到消息队列中
       if (this.socketOpen) {
-        uni.sendSocketMessage({ data: msg })
+        console.log('msg', msg)
+        uni.sendSocketMessage({ data: JSON.stringify(msg) })
       } else {
-        this.socketMsgQueue.push(msg)
+        this.socketMsgQueue.push(JSON.stringify(msg))
       }
     },
 
     // 点击发送按钮
     sendMsg() {
       this.sendSocketMessage({
-        id: Date.now(),
+        id: Math.random(),
         time: Date.now(),
         name: this.nickName,
         msg: this.msg,
       })
+
+      this.msg = ''
     },
   },
 }
