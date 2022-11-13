@@ -60,6 +60,8 @@ export default {
     // 接受到消息后执行
     uni.onSocketMessage((res) => {
       console.log('收到服务器内容：' + res.data)
+      const decodeValue = JSON.parse(res.data)
+      console.log(decodeValue)
       // this.chatMessages.push(JSON.parse(res.data))
     })
   },
@@ -71,7 +73,7 @@ export default {
         console.log('msg', msg)
         uni.sendSocketMessage({ data: JSON.stringify(msg) })
       } else {
-        this.socketMsgQueue.push(JSON.stringify(msg))
+        this.socketMsgQueue.push(msg)
       }
     },
 
